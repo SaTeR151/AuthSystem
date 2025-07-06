@@ -18,4 +18,7 @@ docker-compose -f docker-compose.yaml up -d
 ```
 2df8716b-d385-4b7e-aae9-4618996c438a
 ```
-
+## Для обновления тестовых вариантов БД можность использовать команду
+```
+go run ./cmd/migrate/migrate.go down; go run ./cmd/migrate/migrate.go up
+```
