@@ -8,5 +8,6 @@ CREATE TABLE IF NOT EXISTS users_auth(
     user_ip TEXT,
     PRIMARY KEY (id)
 );
+CREATE INDEX IF NOT EXISTS USER_ID_INDEX ON users_auth(user_id);
 INSERT INTO users_auth (user_id) VALUES ('090bb747-d6d3-4067-a1da-2b83726eb24d');
 INSERT INTO users_auth (user_id) VALUES ('2df8716b-d385-4b7e-aae9-4618996c438a');
