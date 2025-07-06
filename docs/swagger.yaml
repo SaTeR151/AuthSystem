@@ -1,0 +1,156 @@
+basePath: /api
+definitions:
+  dto.GUID:
+    properties:
+      guid:
+        example: 090bb747-d6d3-4067-a1da-2b83726eb24d
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Сервис для авторизации, обновления и деавторизации пользователя, а
+    также получение его guid
+  title: AuthSystem
+  version: 0.9.0
+paths:
+  /api/auth/guid:
+    get:
+      description: получение guid пользователя из полученного access токена
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GUID'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AccessToken: []
+      - RefreshToken: []
+      summary: Get user's guid
+      tags:
+      - Get
+  /api/auth/logout:
+    post:
+      description: Деавторизация пользователя на основе guid из access токена. ВНИМАНИЕ!
+        Guid пользователя будет удалено из БД
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - AccessToken: []
+      - RefreshToken: []
+      summary: User deauthorization
+      tags:
+      - Auth
+  /api/login:
+    post:
+      description: Генерация access и refresh токенов для пользователя с указанным
+        guid
+      parameters:
+      - default: 090bb747-d6d3-4067-a1da-2b83726eb24d
+        description: user guid/id
+        in: query
+        name: guid
+        required: true
+        type: string
+      responses:
+        "201":
+          description: Created
+          headers:
+            at:
+              description: access token. Время жизни токена 60 секунд. Время жизни
+                Cookie 30 дней.
+              type: Cookie
+            rt:
+              description: refresh token. Время жизни Cookie 30 дней.
+              type: Cookie
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User authorization
+      tags:
+      - Auth
+  /api/refresh:
+    post:
+      description: Генерация новых access и refresh токенов на основе guid в access
+        токене
+      responses:
+        "201":
+          description: Created
+          headers:
+            at:
+              description: access token. Время жизни токена 60 секунд. Время жизни
+                Cookie 30 дней.
+              type: Cookie
+            rt:
+              description: refresh token. Время жизни Cookie 30 дней.
+              type: Cookie
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh tokens
+      tags:
+      - Auth
+securityDefinitions:
+  AccessToken:
+    in: header
+    name: at
+    type: apiKey
+  RefreshToken:
+    in: header
+    name: rt
+    type: apiKey
+swagger: "2.0"

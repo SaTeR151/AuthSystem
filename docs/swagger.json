@@ -1,0 +1,231 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Сервис для авторизации, обновления и деавторизации пользователя, а также получение его guid",
+        "title": "AuthSystem",
+        "contact": {},
+        "version": "0.9.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api",
+    "paths": {
+        "/api/auth/guid": {
+            "get": {
+                "security": [
+                    {
+                        "AccessToken": []
+                    },
+                    {
+                        "RefreshToken": []
+                    }
+                ],
+                "description": "получение guid пользователя из полученного access токена",
+                "tags": [
+                    "Get"
+                ],
+                "summary": "Get user's guid",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GUID"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "security": [
+                    {
+                        "AccessToken": []
+                    },
+                    {
+                        "RefreshToken": []
+                    }
+                ],
+                "description": "Деавторизация пользователя на основе guid из access токена. ВНИМАНИЕ! Guid пользователя будет удалено из БД",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "User deauthorization",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "description": "Генерация access и refresh токенов для пользователя с указанным guid",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "User authorization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "090bb747-d6d3-4067-a1da-2b83726eb24d",
+                        "description": "user guid/id",
+                        "name": "guid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "headers": {
+                            "at": {
+                                "type": "Cookie",
+                                "description": "access token. Время жизни токена 60 секунд. Время жизни Cookie 30 дней."
+                            },
+                            "rt": {
+                                "type": "Cookie",
+                                "description": "refresh token. Время жизни Cookie 30 дней."
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/refresh": {
+            "post": {
+                "description": "Генерация новых access и refresh токенов на основе guid в access токене",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh tokens",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "headers": {
+                            "at": {
+                                "type": "Cookie",
+                                "description": "access token. Время жизни токена 60 секунд. Время жизни Cookie 30 дней."
+                            },
+                            "rt": {
+                                "type": "Cookie",
+                                "description": "refresh token. Время жизни Cookie 30 дней."
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.GUID": {
+            "type": "object",
+            "properties": {
+                "guid": {
+                    "type": "string",
+                    "example": "090bb747-d6d3-4067-a1da-2b83726eb24d"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "AccessToken": {
+            "type": "apiKey",
+            "name": "at",
+            "in": "header"
+        },
+        "RefreshToken": {
+            "type": "apiKey",
+            "name": "rt",
+            "in": "header"
+        }
+    }
+}

@@ -1,0 +1,21 @@
+name: authSystem
+
+services:
+  server:
+    build: .
+    env_file:
+      - .env
+    ports: 
+      - "8080:8080"
+    command: go run ./cmd/app/main.go
+    depends_on:
+      - db
+    restart: always
+    environment:
+      - POSTGRES_HOST=db
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
